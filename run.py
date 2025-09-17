@@ -1,5 +1,7 @@
 import io
-from flask import Flask, request, send_file, render_template_string
+import base64
+import zipfile
+from flask import Flask, request, send_file, render_template_string, Response
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 
@@ -14,7 +16,8 @@ HTML_FORM = """
     <form method="post" action="/" >
       <label>Prénom: <input type="text" name="first" required></label><br><br>
       <label>Nom de famille: <input type="text" name="family" required></label><br><br>
-      <button type="submit">Générer et télécharger</button>
+      <button type="submit" name="action" value="png">Télécharger PNG</button>
+      <button type="submit" name="action" value="pwa">Télécharger Application</button>
     </form>
   </body>
 </html>
@@ -69,6 +72,7 @@ def index():
     if request.method == "POST":
         first = (request.form.get("first") or "").strip()
         family = (request.form.get("family") or "").strip()
+        action = request.form.get("action")
         if not first or not family:
             return render_template_string(HTML_FORM + "<p style='color:red;'>Les deux champs sont requis.</p>")
         
@@ -77,12 +81,93 @@ def index():
         
         name = f"{family}.{first}"
         img = generate_image(name)
+        if action == "png":
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            buf.seek(0)
+            filename = f"{name}.png"
+            return send_file(buf, mimetype="image/png", as_attachment=True, download_name=filename)
+        elif action == "pwa":
+            # Générer PWA ZIP (même logique que ta route /pwa)
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-        buf = io.BytesIO()
-        img.save(buf, format="PNG")
-        buf.seek(0)
-        filename = f"{name}.png"
-        return send_file(buf, mimetype="image/png", as_attachment=True, download_name=filename)
+            index_html = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>QR {name}</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {{
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff;
+    }}
+    img {{
+      max-width: 90vw;
+      max-height: 90vh;
+    }}
+  </style>
+</head>
+<body>
+  <img src="data:image/png;base64,{b64}" alt="QR Code">
+  <script>
+    if ('serviceWorker' in navigator) {{
+      navigator.serviceWorker.register('sw.js');
+    }}
+  </script>
+</body>
+</html>
+"""
+
+            manifest_json = f"""{{
+  "name": "QR {name}",
+  "short_name": "QR",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [{{ "src": "icon.png", "sizes": "192x192", "type": "image/png" }}]
+}}
+"""
+
+            sw_js = """self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open("qr-cache").then(cache => {
+      return cache.addAll(["index.html", "manifest.json", "icon.png"]);
+    })
+  );
+});
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
+  );
+});
+"""
+
+            # Icône placeholder
+            icon = Image.new("RGB", (192,192), "white")
+            icon_buf = io.BytesIO()
+            icon.save(icon_buf, format="PNG")
+            icon_buf.seek(0)
+
+            # ZIP
+            zip_buf = io.BytesIO()
+            with zipfile.ZipFile(zip_buf, "w") as z:
+                z.writestr("index.html", index_html)
+                z.writestr("manifest.json", manifest_json)
+                z.writestr("sw.js", sw_js)
+                z.writestr("icon.png", icon_buf.read())
+            zip_buf.seek(0)
+
+            return send_file(zip_buf, mimetype="application/zip", as_attachment=True, download_name=f"PWA_{name}.zip")
+
     return render_template_string(HTML_FORM)
 
 if __name__ == "__main__":
