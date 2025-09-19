@@ -31,7 +31,7 @@ def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = Non
     if show_logo and logo_path:
         try:
             logo = Image.open(logo_path).convert("RGBA")
-            logo_size = int(w * 0.15)  # 15% de la largeur du QR
+            logo_size = int(w * 0.25)  # 15% de la largeur du QR
             logo.thumbnail((logo_size, logo_size))
             pos = ((w - logo.size[0]) // 2, (h - logo.size[1]) // 2)
             qr_img.paste(logo, pos, mask=logo)
