@@ -110,6 +110,96 @@
         font-weight: 500;
         margin: 0;
       }
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .color-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: normal !important;
+        margin-bottom: 0 !important;
+      }
+      .color-option:hover {
+        background: rgba(39, 174, 96, 0.1);
+        transform: translateY(-2px);
+      }
+      .color-option input[type="radio"] {
+        display: none;
+      }
+      .color-option input[type="radio"]:checked + .color-preview {
+        border-color: #27ae60;
+        border-width: 3px;
+        box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.3);
+      }
+      .color-preview {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .color-option span {
+        font-size: 11px;
+        text-align: center;
+        color: #666;
+      }
+      .logo-choice {
+        margin-bottom: 20px;
+      }
+      .radio-option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+        font-weight: normal !important;
+      }
+      .radio-option:hover {
+        background: rgba(39, 174, 96, 0.1);
+      }
+      .radio-option input[type="radio"] {
+        display: none;
+      }
+      .radio-custom {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        margin-right: 10px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      .radio-option input[type="radio"]:checked + .radio-custom {
+        border-color: #27ae60;
+        background: #27ae60;
+      }
+      .radio-option input[type="radio"]:checked + .radio-custom::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+      }
+      .radio-option span:last-child {
+        color: #333;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
@@ -121,7 +211,122 @@
       <label>Nom de famille:
         <input type="text" name="family" required>
       </label>
-      <button type="submit" name="action" value="png">🍏 iPhone</button>
+
+      <label>Couleur de fond du QR Code:</label>
+      <div class="color-grid">
+        <!-- Neutres -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="white" checked>
+          <div class="color-preview" style="background: white;"></div>
+          <span>Blanc</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#f5f5f5">
+          <div class="color-preview" style="background: #f5f5f5;"></div>
+          <span>Gris clair</span>
+        </label>
+        
+        <!-- Rouges/Roses -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#fff0f5">
+          <div class="color-preview" style="background: #fff0f5;"></div>
+          <span>Rose pâle</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#ff69b4">
+          <div class="color-preview" style="background: #ff69b4;"></div>
+          <span>Rose flash</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#ff1493">
+          <div class="color-preview" style="background: #ff1493;"></div>
+          <span>Fuchsia</span>
+        </label>
+        
+        <!-- Oranges/Jaunes -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#ff4500">
+          <div class="color-preview" style="background: #ff4500;"></div>
+          <span>Orange vif</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#fff8dc">
+          <div class="color-preview" style="background: #fff8dc;"></div>
+          <span>Crème</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#fdf5e6">
+          <div class="color-preview" style="background: #fdf5e6;"></div>
+          <span>Beige</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#ffd700">
+          <div class="color-preview" style="background: #ffd700;"></div>
+          <span>Or brillant</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#ffff00">
+          <div class="color-preview" style="background: #ffff00;"></div>
+          <span>Jaune fluo</span>
+        </label>
+        
+        <!-- Verts -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#7fff00">
+          <div class="color-preview" style="background: #7fff00;"></div>
+          <span>Vert pomme</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#00ff00">
+          <div class="color-preview" style="background: #00ff00;"></div>
+          <span>Vert fluo</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#f0fff0">
+          <div class="color-preview" style="background: #f0fff0;"></div>
+          <span>Vert pâle</span>
+        </label>
+        
+        <!-- Bleus/Cyans -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#00ffff">
+          <div class="color-preview" style="background: #00ffff;"></div>
+          <span>Cyan</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#f0f8ff">
+          <div class="color-preview" style="background: #f0f8ff;"></div>
+          <span>Bleu pâle</span>
+        </label>
+        
+        <!-- Violets -->
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#9400d3">
+          <div class="color-preview" style="background: #9400d3;"></div>
+          <span>Violet flash</span>
+        </label>
+        <label class="color-option">
+          <input type="radio" name="bg_color" value="#e6e6fa">
+          <div class="color-preview" style="background: #e6e6fa;"></div>
+          <span>Lavande</span>
+        </label>
+      </div>
+
+      <label>Logo au centre du QR Code:</label>
+      <div class="logo-choice">
+        <label class="radio-option">
+          <input type="radio" name="show_logo" value="true" checked>
+          <span class="radio-custom"></span>
+          <span>🏔️ Avec logo Annonay Escalade</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="show_logo" value="false">
+          <span class="radio-custom"></span>
+          <span>⭕ Sans logo (QR code pure)</span>
+        </label>
+      </div>
+
+      <button type="submit" name="action" value="png">🍏 iPhone ou Image</button>
       <button type="submit" name="action" value="pwa">🤖 Android</button>
     </form> 
 

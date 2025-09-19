@@ -14,7 +14,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 app = Flask(__name__)
 
-def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = None) -> Image.Image:
+def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = None, bg_color: str = "white", show_logo: bool = True) -> Image.Image:
     # QR avec correction haute (important si on met un logo)
     qr = qrcode.QRCode(
         error_correction=ERROR_CORRECT_H,
@@ -24,11 +24,11 @@ def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = Non
     qr.add_data(text)
     qr.make(fit=True)
 
-    qr_img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+    qr_img = qr.make_image(fill_color="black", back_color=bg_color).convert("RGB")
     w, h = qr_img.size
 
     # --- Ajouter un logo au centre ---
-    if logo_path:
+    if show_logo and logo_path:
         try:
             logo = Image.open(logo_path).convert("RGBA")
             logo_size = int(w * 0.15)  # 15% de la largeur du QR
@@ -53,8 +53,9 @@ def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = Non
             text_w, text_h = font.getsize(bottom_text)
 
         padding = 10
-        new_h = h + text_h + padding
-        new_img = Image.new("RGB", (w, new_h), "white")
+        bottom_margin = 10
+        new_h = h + text_h + padding + bottom_margin
+        new_img = Image.new("RGB", (w, new_h), bg_color)
         draw = ImageDraw.Draw(new_img)
 
         # centrer le texte
@@ -67,6 +68,39 @@ def generate_image(text: str, logo_path: str = LOGO_PATH, bottom_text: str = Non
 
     return qr_img
 
+def is_valid_bg_color(color: str) -> bool:
+    """Vérifie que la couleur de fond est valide et permet une bonne lisibilité"""
+    valid_colors = {
+        # Neutres
+        "white": "#ffffff",
+        "#f5f5f5": "White Smoke",
+        
+        # Rouges/Roses
+        "#fff0f5": "Lavender Blush",
+        "#ff69b4": "Hot Pink", 
+        "#ff1493": "Deep Pink",
+        
+        # Oranges/Jaunes
+        "#ff4500": "Orange Red",
+        "#fff8dc": "Cornsilk",
+        "#fdf5e6": "Old Lace",
+        "#ffd700": "Gold",
+        "#ffff00": "Yellow",
+        
+        # Verts
+        "#7fff00": "Chartreuse",
+        "#00ff00": "Lime",
+        "#f0fff0": "Honeydew",
+        
+        # Bleus/Cyans
+        "#00ffff": "Cyan",
+        "#f0f8ff": "Alice Blue",
+        
+        # Violets
+        "#9400d3": "Dark Violet",
+        "#e6e6fa": "Lavender"
+    }
+    return color in valid_colors
 
 def normalize_name(s: str) -> str:
     # majuscule première lettre, le reste en minuscule ; conserve traits d'union et espaces
@@ -131,6 +165,8 @@ def index():
     if request.method == "POST":
         first = (request.form.get("first") or "").strip()
         family = (request.form.get("family") or "").strip()
+        bg_color = request.form.get("bg_color", "white")
+        show_logo = request.form.get("show_logo", "true") == "true"
         action = request.form.get("action")
         
         if not first or not family:
@@ -140,7 +176,7 @@ def index():
         family = normalize_name(family)
         
         name = f"{family}.{first}"
-        img = generate_image(text=name, bottom_text=f"{first} {family}")
+        img = generate_image(text=name, bottom_text=f"{first} {family}", bg_color=bg_color, show_logo=show_logo)
         
         if action == "png":
             buf = io.BytesIO()
