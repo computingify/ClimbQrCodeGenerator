@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>Générateur QR - Annonay Escalade</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", sans-serif;
+        background: linear-gradient(135deg, #f5f5f5 40%, #dfe9df);
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        min-height: 100vh;
+        position: relative;
+      }
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      form {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px 30px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin: 20px 0;
+        width: 100%;
+        max-width: 400px;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        font-size: 16px;
+      }
+      button {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-right: 10px;
+      }
+      button:hover {
+        background: #219150;
+        transform: scale(1.05);
+      }
+      hr {
+        margin: 40px 0 20px 0;
+        border: none;
+        border-top: 2px dashed #aaa;
+        width: 80%;
+      }
+      h2 {
+        color: #34495e;
+        margin-bottom: 15px;
+      }
+      video {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        max-width: 90%;
+        margin-bottom: 25px;
+      }
+      .tutorial {
+        max-width: 500px;
+        text-align: center;
+      }
+      .powered-by {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #666;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 12px;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+      }
+      .powered-by:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .powered-by img {
+        height: 20px;
+        width: auto;
+        border-radius: 3px;
+      }
+      .powered-by-text {
+        font-weight: 500;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🏔️ Générateur QR pour Annonay Escalade</h1>
+    <form method="post" action="/" >
+      <label>Prénom:
+        <input type="text" name="first" required>
+      </label>
+      <label>Nom de famille:
+        <input type="text" name="family" required>
+      </label>
+      <button type="submit" name="action" value="png">🍏 iPhone</button>
+      <button type="submit" name="action" value="pwa">🤖 Android</button>
+    </form> 
+
+    <hr>
+    <div class="tutorial">
+      <h2>📚 Tutoriel installation</h2>
+      <h3>iPhone</h3>
+      <video controls>
+        <source src="{{ url_for('static', filename='video_ios.mp4') }}" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+      </video> 
+
+      <h3>Android</h3>
+      <video controls>
+        <source src="{{ url_for('static', filename='video_android.mp4') }}" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+      </video>
+    </div>
+
+    <!-- Logo "Powered by" en bas à droite -->
+    <div class="powered-by">
+      <span class="powered-by-text">Powered by</span>
+      <img src="{{ url_for('static', filename='adn_dev_logo.png') }}" alt="ADN Dev">
+    </div>
+  </body>
+</html>
