@@ -6,6 +6,7 @@ import io
 import zipfile
 import qrcode
 import shutil
+import base64
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOGO_PATH = os.path.join(BASE_DIR, "AnnonayEscaladeLogo.png")
@@ -116,9 +117,11 @@ def create_pwa_zip(name: str, qr_image: Image.Image) -> io.BytesIO:
     pwa_dir = os.path.join(BASE_DIR, "pwa_temp", name)
     os.makedirs(pwa_dir, exist_ok=True)
     
-    # Sauvegarder l'image QR
-    qr_path = os.path.join(pwa_dir, "qr.png")
-    qr_image.save(qr_path, format="PNG")
+    # Sauvegarder l'image QR encodé en base64
+    buf = io.BytesIO()
+    qr_image.save(buf, format="PNG")
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    data_uri = f"data:image/png;base64,{b64}"
     
     # Copier les fichiers statiques vers le répertoire PWA
     static_files = ["pwa_index.html", "manifest.json", "sw.js", "icon.png"]
@@ -131,6 +134,7 @@ def create_pwa_zip(name: str, qr_image: Image.Image) -> io.BytesIO:
                 with open(src, 'r', encoding='utf-8') as f:
                     content = f.read()
                 content = content.replace("{{name}}", name)
+                content = content.replace('src="qr.png"', f'src="{data_uri}"')
                 with open(dst, 'w', encoding='utf-8') as f:
                     f.write(content)
             elif file == "manifest.json":
